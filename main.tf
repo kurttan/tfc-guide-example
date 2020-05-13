@@ -1,28 +1,40 @@
+# Terraform configuration
+
 provider "aws" {
-  version = "2.33.0"
-
-  region = var.aws_region
+  region = "us-west-2"
 }
 
-provider "random" {
-  version = "2.2"
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "2.21.0"
+
+  name = var.vpc_name
+  cidr = var.vpc_cidr
+
+  azs             = var.vpc_azs
+  private_subnets = var.vpc_private_subnets
+  public_subnets  = var.vpc_public_subnets
+
+  enable_nat_gateway = var.vpc_enable_nat_gateway
+
+  tags = var.vpc_tags
 }
 
-resource "random_pet" "table_name" {}
+module "ec2_instances" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "2.12.0"
 
-resource "aws_dynamodb_table" "tfc_example_table" {
-  name = "${var.db_table_name}-${random_pet.table_name.id}"
+  name           = "my-ec2-cluster"
+  instance_count = 1
 
-  read_capacity  = var.db_read_capacity
-  write_capacity = var.db_write_capacity
-  hash_key       = "UUID"
-
-  attribute {
-    name = "UUID"
-    type = "S"
-  }
+  ami                    = "ami-0c5204531f799e0c6"
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  subnet_id              = module.vpc.public_subnets[0]
 
   tags = {
-    user_name = var.tag_user_name
+    Terraform   = "true"
+    Environment = "dev"
   }
 }
+

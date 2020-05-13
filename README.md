@@ -1,3 +1,5 @@
-# Terraform Cloud Getting Started Guide Example
+ Learn Terraform Modules
 
-This is an example Terraform configuration intended for use with the Terraform Cloud Getting Started Guide hosted at https://learn.hashicorp.com/terraform/cloud-gettingstarted/tfc_overview
+Learn what Terraform modules are and when to use them.
+
+Follow along with the [Learn guide](https://learn.hashicorp.com/terraform/modules/modules-overview) at HashiCorp Learn.
